@@ -1,0 +1,204 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <title>A Special Gift For You</title>
+    <link rel="stylesheet" href="style.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  </head>
+  <body>
+
+    <div id="landscape-prompt">
+      <div class="rotate-device">
+        <div class="phone-icon">
+          <div class="phone-body"><div class="phone-screen"></div></div>
+          <div class="rotate-arrow">&#8635;</div>
+        </div>
+        <p>Please rotate your device to<br/><strong>landscape mode</strong><br/>for the full experience</p>
+      </div>
+    </div>
+
+    <canvas id="main-canvas"></canvas>
+    <div id="starry-sky" class="scene hidden"></div>
+    <div id="sparkle-layer" class="scene hidden"></div>
+
+    <!-- ══════════════════════════════════
+         MEMORY BOOK
+         ══════════════════════════════════ -->
+    <div id="memory-book" class="scene hidden">
+
+      <!-- MESSAGE CARD — shown above the open book -->
+      <div id="book-message-card" class="book-message-card hidden">
+        <span class="msg-heart">💕</span>
+        <p class="msg-text">Happy birthday</p>
+      </div>
+
+      <!-- OPEN BOOK — always rendered, cover sits on top -->
+      <div id="book-open-panel" class="book-panel hidden">
+        <div class="open-book">
+          <div class="book-leaf book-leaf-left">
+            <div class="page-grain"></div>
+            <div class="leaf-photo-wrap">
+              <img id="photo-left" src="" alt="" class="leaf-photo"/>
+              <div class="photo-corner tl"></div><div class="photo-corner tr"></div>
+              <div class="photo-corner bl"></div><div class="photo-corner br"></div>
+            </div>
+            <div class="leaf-heart left-leaf-heart">&#x1F495;</div>
+          </div>
+          <div class="book-gutter"><div class="gutter-line"></div></div>
+          <div class="book-leaf book-leaf-right" id="book-right-page">
+            <div class="page-grain"></div>
+            <div class="leaf-photo-wrap">
+              <img id="photo-right" src="" alt="" class="leaf-photo"/>
+              <div class="photo-corner tl"></div><div class="photo-corner tr"></div>
+              <div class="photo-corner bl"></div><div class="photo-corner br"></div>
+            </div>
+            <div class="leaf-heart right-leaf-heart">&#x1F495;</div>
+          </div>
+          <!-- Page turn animation layer -->
+          <div id="page-turn-wrapper" class="page-turn-wrapper" style="visibility:hidden">
+            <div class="page-turn-face page-turn-front">
+              <div class="page-grain"></div>
+              <div class="leaf-photo-wrap"><img id="turn-photo-front" src="" alt="" class="leaf-photo"/></div>
+            </div>
+            <div class="page-turn-face page-turn-back">
+              <div class="page-grain"></div>
+              <div class="back-face-inner">
+                <div class="leaf-photo-wrap"><img id="turn-photo-back" src="" alt="" class="leaf-photo"/></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="spread-progress" id="spread-progress">
+          <span class="spread-dot active"></span><span class="spread-dot"></span>
+          <span class="spread-dot"></span><span class="spread-dot"></span><span class="spread-dot"></span>
+        </div>
+        <div class="book-tap-hint" id="book-tap-hint">✦ Tap anywhere to turn the page ✦</div>
+      </div>
+
+      <!-- COVER — full-width book cover that flips open from spine (left edge) -->
+      <div id="book-cover-panel" class="book-panel">
+        <div id="cover-scene">
+          <div id="cover-card">
+            <!-- Front face: full book cover -->
+            <div class="cover-face cover-front">
+              <!-- Spine strip on left -->
+              <div class="cover-spine"></div>
+              <!-- Main cover content -->
+              <div class="cover-content">
+                <div class="cover-shimmer"></div>
+                <div class="cover-heart-icon">
+                  <svg viewBox="0 0 60 55" width="44" height="40">
+                    <path d="M30 50 C10 35,0 20,0 14 C0 6,6 0,14 0 C20 0,26 4,30 10 C34 4,40 0,46 0 C54 0,60 6,60 14 C60 20,50 35,30 50Z" fill="#f28b9e"/>
+                  </svg>
+                </div>
+                <div class="paws-container">
+                  <svg class="paw-svg left-paw" viewBox="0 0 120 120" width="62" height="62">
+                    <ellipse cx="25" cy="22" rx="14" ry="11" fill="#fddede" stroke="#e8aab0" stroke-width="2"/>
+                    <ellipse cx="52" cy="14" rx="12" ry="10" fill="#fddede" stroke="#e8aab0" stroke-width="2"/>
+                    <ellipse cx="78" cy="22" rx="14" ry="11" fill="#fddede" stroke="#e8aab0" stroke-width="2"/>
+                    <ellipse cx="52" cy="60" rx="30" ry="32" fill="#fddede" stroke="#e8aab0" stroke-width="2"/>
+                    <ellipse cx="38" cy="50" rx="8" ry="6" fill="#f5c0c0"/>
+                    <ellipse cx="52" cy="46" rx="8" ry="6" fill="#f5c0c0"/>
+                    <ellipse cx="66" cy="50" rx="8" ry="6" fill="#f5c0c0"/>
+                    <ellipse cx="52" cy="64" rx="12" ry="10" fill="#f5c0c0"/>
+                  </svg>
+                  <svg class="paw-svg right-paw" viewBox="0 0 120 120" width="62" height="62">
+                    <ellipse cx="42" cy="22" rx="14" ry="11" fill="#fddede" stroke="#e8aab0" stroke-width="2"/>
+                    <ellipse cx="68" cy="14" rx="12" ry="10" fill="#fddede" stroke="#e8aab0" stroke-width="2"/>
+                    <ellipse cx="95" cy="22" rx="14" ry="11" fill="#fddede" stroke="#e8aab0" stroke-width="2"/>
+                    <ellipse cx="68" cy="60" rx="30" ry="32" fill="#fddede" stroke="#e8aab0" stroke-width="2"/>
+                    <ellipse cx="54" cy="50" rx="8" ry="6" fill="#f5c0c0"/>
+                    <ellipse cx="68" cy="46" rx="8" ry="6" fill="#f5c0c0"/>
+                    <ellipse cx="82" cy="50" rx="8" ry="6" fill="#f5c0c0"/>
+                    <ellipse cx="68" cy="64" rx="12" ry="10" fill="#f5c0c0"/>
+                  </svg>
+                </div>
+                <h2 class="cover-title">Our Memories</h2>
+                <p class="cover-subtitle">A collection of beautiful moments</p>
+                <div class="cover-ornament">✦ ✦ ✦</div>
+                <div class="cover-tap-hint pulse-hint">Tap to open ✦</div>
+              </div>
+            </div>
+            <!-- Back face: inside cover (visible mid-flip) -->
+            <div class="cover-face cover-back">
+              <div class="cover-back-lines"></div>
+              <div class="cover-back-deco">✦</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /memory-book -->
+
+    <!-- HEART GALLERY -->
+    <div id="heart-gallery" class="scene hidden">
+      <div class="heart-cards-layer" id="heart-cards-layer"></div>
+      <div class="gallery-title hidden" id="gallery-title">
+        <span>Happy Birthday</span>
+        <div class="title-hearts">&#10084; &#x1F495; &#10084;</div>
+      </div>
+    </div>
+
+    <div id="floating-hearts"></div>
+    <div id="confetti-layer"></div>
+
+    <button id="play-btn"     class="ctrl-btn"><span class="play-icon">&#9654;</span></button>
+    <button id="settings-btn" class="ctrl-btn"><span class="gear-icon">&#9881;</span></button>
+
+    <div id="settings-panel" class="hidden">
+      <div class="settings-overlay" id="settings-overlay"></div>
+      <div class="settings-content">
+        <div class="settings-header">
+          <h2>Settings</h2>
+          <button id="close-settings" class="close-btn">&times;</button>
+        </div>
+        <div class="settings-body">
+          <div class="setting-section">
+            <h3>Audio</h3>
+            <label class="file-label"><span>Choose music file</span><input type="file" id="audio-upload" accept="audio/*"/></label>
+            <audio id="audio-player" controls></audio>
+          </div>
+          <div class="setting-section">
+            <h3>Countdown</h3>
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="countdown" value="3" checked/><span>3s</span></label>
+              <label class="radio-label"><input type="radio" name="countdown" value="5"/><span>5s</span></label>
+              <label class="radio-label"><input type="radio" name="countdown" value="10"/><span>10s</span></label>
+            </div>
+          </div>
+          <div class="setting-section">
+            <h3>Character Rain</h3>
+            <label class="input-label">Characters<input type="text" id="rain-chars" value="HAPPYBIRTHDAY"/></label>
+            <div class="color-row">
+              <label class="color-label">Color 1 <input type="color" id="rain-color1" value="#ff69b4"/></label>
+              <label class="color-label">Color 2 <input type="color" id="rain-color2" value="#ffffff"/></label>
+            </div>
+          </div>
+          <div class="setting-section">
+            <h3>Main Text</h3>
+            <label class="input-label">Words (| to separate)<input type="text" id="main-text-input" value="HAPPY|BIRTHDAY|MY LOVE"/></label>
+            <label class="color-label">Text Color <input type="color" id="text-color" value="#ff9999"/></label>
+          </div>
+          <div class="setting-section">
+            <h3>Photos (up to 10)</h3>
+            <label class="file-label"><span>Upload photos</span><input type="file" id="photo-upload" accept="image/*" multiple/></label>
+            <div id="photo-preview" class="photo-preview-grid"></div>
+          </div>
+          <div class="setting-section">
+            <h3>Effects</h3>
+            <label class="toggle-label"><span>Memory Book</span><input type="checkbox" id="toggle-book" checked/><span class="toggle-slider"></span></label>
+            <label class="toggle-label"><span>Heart Effect</span><input type="checkbox" id="toggle-hearts" checked/><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div class="settings-footer">
+          <button id="apply-settings" class="apply-btn">Apply Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <audio id="bg-music" loop></audio>
+    <script src="script.js"></script>
+  </body>
+</html>
