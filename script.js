@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   "use strict";
 
   const config = {
@@ -57,16 +57,23 @@
     heartsInterval = null;
 
   /* ── EASING ── */
-  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
   function easeInOutCubic(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   }
   function easeOutBack(t) {
-    const c1 = 1.70158, c3 = c1 + 1;
+    const c1 = 1.70158,
+      c3 = c1 + 1;
     return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
   }
-  function lerp(a, b, t) { return a + (b - a) * t; }
-  function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+  function sleep(ms) {
+    return new Promise((r) => setTimeout(r, ms));
+  }
 
   /* ── INIT ── */
   function init() {
@@ -74,7 +81,10 @@
     bgMusic.src = "Happy_Birthday.mp3";
     bgMusic.loop = true;
     resizeCanvas();
-    window.addEventListener("resize", () => { resizeCanvas(); checkOrientation(); });
+    window.addEventListener("resize", () => {
+      resizeCanvas();
+      checkOrientation();
+    });
     window.addEventListener("orientationchange", checkOrientation);
     checkOrientation();
     playBtn.addEventListener("click", togglePlay);
@@ -89,7 +99,9 @@
   }
   function checkOrientation() {
     landscapePrompt.style.display =
-      window.innerHeight > window.innerWidth && window.innerWidth < 768 ? "" : "none";
+      window.innerHeight > window.innerWidth && window.innerWidth < 768
+        ? ""
+        : "none";
   }
   function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -104,8 +116,11 @@
   }
 
   /* ── RAIN ── */
-  const FS = 20, TRAIL = 8, EVERY = 5;
-  let streams = [], fc = 0;
+  const FS = 20,
+    TRAIL = 8,
+    EVERY = 5;
+  let streams = [],
+    fc = 0;
   function rc() {
     const s = config.rainChars;
     return s[Math.floor(Math.random() * s.length)];
@@ -136,7 +151,10 @@
         const cy = s.y - i * FS;
         if (cy < -FS || cy > canvas.height) continue;
         const a = i === 0 ? 1 : Math.max(0, 1 - (i / TRAIL) * 1.4);
-        ctx.fillStyle = hexToRgba(i === 0 ? config.rainColor2 : config.rainColor1, a);
+        ctx.fillStyle = hexToRgba(
+          i === 0 ? config.rainColor2 : config.rainColor1,
+          a,
+        );
         ctx.fillText(s.chars[i], s.x, cy);
       }
       s.y += s.spd;
@@ -148,11 +166,17 @@
     }
   }
   function startRainAnimation() {
-    function a() { drawRain(); rainAnimId = requestAnimationFrame(a); }
+    function a() {
+      drawRain();
+      rainAnimId = requestAnimationFrame(a);
+    }
     a();
   }
   function stopRainAnimation() {
-    if (rainAnimId) { cancelAnimationFrame(rainAnimId); rainAnimId = null; }
+    if (rainAnimId) {
+      cancelAnimationFrame(rainAnimId);
+      rainAnimId = null;
+    }
   }
 
   /* ── DOT MATRIX ── */
@@ -191,13 +215,22 @@
       cy = canvas.height / 2;
     const pts = dots.map((d) => {
       const a = Math.random() * Math.PI * 2,
-        r = Math.max(canvas.width, canvas.height) * (0.3 + Math.random() * 0.55);
-      return { tx: d.x, ty: d.y, sx: cx + Math.cos(a) * r, sy: cy + Math.sin(a) * r };
+        r =
+          Math.max(canvas.width, canvas.height) * (0.3 + Math.random() * 0.55);
+      return {
+        tx: d.x,
+        ty: d.y,
+        sx: cx + Math.cos(a) * r,
+        sy: cy + Math.sin(a) * r,
+      };
     });
     const t0 = performance.now();
     await new Promise((res) => {
       function f(now) {
-        if (!isPlaying) { res(); return; }
+        if (!isPlaying) {
+          res();
+          return;
+        }
         const p = Math.min((now - t0) / dur, 1);
         drawRain();
         if (p < 0.45) {
@@ -208,7 +241,13 @@
           ctx.fillStyle = hexToRgba(config.textColor, lerp(0.1, 1, t));
           for (const pt of pts) {
             ctx.beginPath();
-            ctx.arc(lerp(pt.sx, pt.tx, t), lerp(pt.sy, pt.ty, t), dotSize / 2, 0, Math.PI * 2);
+            ctx.arc(
+              lerp(pt.sx, pt.tx, t),
+              lerp(pt.sy, pt.ty, t),
+              dotSize / 2,
+              0,
+              Math.PI * 2,
+            );
             ctx.fill();
           }
           ctx.restore();
@@ -218,7 +257,9 @@
           ctx.save();
           ctx.shadowBlur = 30 + Math.sin(t * Math.PI * 3) * 14;
           ctx.shadowColor = config.textColor;
-          ctx.translate(cx, cy); ctx.scale(pulse, pulse); ctx.translate(-cx, -cy);
+          ctx.translate(cx, cy);
+          ctx.scale(pulse, pulse);
+          ctx.translate(-cx, -cy);
           drawDots(dots, dotSize, config.textColor, 1);
           ctx.restore();
         } else {
@@ -227,7 +268,9 @@
           ctx.save();
           ctx.shadowBlur = lerp(30, 0, t);
           ctx.shadowColor = config.textColor;
-          ctx.translate(cx, cy); ctx.scale(sc, sc); ctx.translate(-cx, -cy);
+          ctx.translate(cx, cy);
+          ctx.scale(sc, sc);
+          ctx.translate(-cx, -cy);
           drawDots(dots, dotSize, config.textColor, lerp(1, 0, t));
           ctx.restore();
         }
@@ -244,14 +287,18 @@
       cx = canvas.width / 2,
       cy = canvas.height / 2;
     const pts = dots.map((d) => ({
-      tx: d.x, ty: d.y,
+      tx: d.x,
+      ty: d.y,
       sx: d.x + (Math.random() - 0.5) * canvas.width * 0.65,
       sy: canvas.height + 60 + Math.random() * canvas.height * 0.35,
     }));
     const t0 = performance.now();
     await new Promise((res) => {
       function f(now) {
-        if (!isPlaying) { res(); return; }
+        if (!isPlaying) {
+          res();
+          return;
+        }
         const p = Math.min((now - t0) / dur, 1);
         drawRain();
         if (p < 0.24) {
@@ -262,7 +309,13 @@
           ctx.fillStyle = hexToRgba(config.textColor, lerp(0, 1, t));
           for (const pt of pts) {
             ctx.beginPath();
-            ctx.arc(lerp(pt.sx, pt.tx, t), lerp(pt.sy, pt.ty, t), dotSize / 2, 0, Math.PI * 2);
+            ctx.arc(
+              lerp(pt.sx, pt.tx, t),
+              lerp(pt.sy, pt.ty, t),
+              dotSize / 2,
+              0,
+              Math.PI * 2,
+            );
             ctx.fill();
           }
           ctx.restore();
@@ -272,7 +325,9 @@
           ctx.save();
           ctx.shadowBlur = 22 + Math.sin(t * Math.PI * 2.7) * 10;
           ctx.shadowColor = config.textColor;
-          ctx.translate(cx, cy); ctx.scale(pulse, pulse); ctx.translate(-cx, -cy);
+          ctx.translate(cx, cy);
+          ctx.scale(pulse, pulse);
+          ctx.translate(-cx, -cy);
           drawDots(dots, dotSize, config.textColor, 1);
           ctx.restore();
         } else {
@@ -318,7 +373,15 @@
     }
   }
   function launchConfetti(n) {
-    const p = ["#ff69b4","#ff1493","#ffd700","#98ff98","#87ceeb","#f5a0c0","#fff"];
+    const p = [
+      "#ff69b4",
+      "#ff1493",
+      "#ffd700",
+      "#98ff98",
+      "#87ceeb",
+      "#f5a0c0",
+      "#fff",
+    ];
     for (let i = 0; i < (n || 80); i++)
       setTimeout(() => {
         const c = document.createElement("div");
@@ -341,8 +404,10 @@
     const N = isMobile ? 12 : 14;
 
     /* Heart parametric constants */
-    const HX = 1.18, HW = 16 * HX;
-    const HH_UP = 12.3, HH_DOWN = 17.0;
+    const HX = 1.18,
+      HW = 16 * HX;
+    const HH_UP = 12.3,
+      HH_DOWN = 17.0;
 
     /* ── Card size ── */
     const CW = Math.round(Math.min(vw * (isMobile ? 0.13 : 0.115), 130));
@@ -351,7 +416,7 @@
     /* ── Scale: target heart to ~58% viewport width, capped by height ── */
     const targetHeartW = Math.min(vw * 0.58, 700);
     const scaleByW = (targetHeartW - CW * 0.5) / (2 * HW);
-    const scaleByH = (vh * 0.80 - CH * 0.5) / (HH_UP + HH_DOWN);
+    const scaleByH = (vh * 0.8 - CH * 0.5) / (HH_UP + HH_DOWN);
     const scale = Math.min(scaleByW, scaleByH);
 
     /* Container */
@@ -369,7 +434,11 @@
       const t = (i / SAMPLES) * 2 * Math.PI;
       hpts.push({
         hx: 16 * Math.pow(Math.sin(t), 3) * HX,
-        hy: 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t),
+        hy:
+          13 * Math.cos(t) -
+          5 * Math.cos(2 * t) -
+          2 * Math.cos(3 * t) -
+          Math.cos(4 * t),
       });
     }
     const cumLen = [0];
@@ -380,7 +449,8 @@
     }
     const totalLen = cumLen[cumLen.length - 1];
     function arcPt(target) {
-      let lo = 0, hi = SAMPLES;
+      let lo = 0,
+        hi = SAMPLES;
       while (lo < hi) {
         const m = (lo + hi) >> 1;
         if (cumLen[m] < target) lo = m + 1;
@@ -404,7 +474,8 @@
         sy = originY - hy * scale;
 
       /* Natural outward rotation from heart center */
-      const outAng = Math.atan2(-(sy - originY), sx - originX) * (180 / Math.PI);
+      const outAng =
+        Math.atan2(-(sy - originY), sx - originX) * (180 / Math.PI);
       const rot = outAng * 0.08 + (Math.random() - 0.5) * 12;
 
       /* Z-index: lower cards (bottom of heart) render on top */
@@ -447,8 +518,8 @@
     heartsInterval = setInterval(() => {
       const h = document.createElement("div");
       h.className = "floating-heart";
-      const em = ["❤","💕","💖","💗","💓","✨","🌸","🎀"],
-        cl = ["#ff69b4","#ff1493","#e91e63","#f48fb1","#ffc0cb"];
+      const em = ["❤", "💕", "💖", "💗", "💓", "✨", "🌸", "🎀"],
+        cl = ["#ff69b4", "#ff1493", "#e91e63", "#f48fb1", "#ffc0cb"];
       h.innerHTML = em[Math.floor(Math.random() * em.length)];
       h.style.cssText = `left:${Math.random() * 100}%;bottom:0;font-size:${14 + Math.random() * 18}px;--duration:${5 + Math.random() * 5}s;color:${cl[Math.floor(Math.random() * cl.length)]}`;
       floatingHearts.appendChild(h);
@@ -456,7 +527,10 @@
     }, 340);
   }
   function stopFloatingHearts() {
-    if (heartsInterval) { clearInterval(heartsInterval); heartsInterval = null; }
+    if (heartsInterval) {
+      clearInterval(heartsInterval);
+      heartsInterval = null;
+    }
     floatingHearts.innerHTML = "";
   }
 
@@ -465,18 +539,22 @@
   ═══════════════════════════════════════════════════════════ */
   function getSpreads() {
     return Array.from({ length: 5 }, (_, i) => ({
-      left:  config.photos[i * 2]     || defaultPhotos[i * 2],
+      left: config.photos[i * 2] || defaultPhotos[i * 2],
       right: config.photos[i * 2 + 1] || defaultPhotos[i * 2 + 1],
     }));
   }
   function setSpreadProgress(idx) {
-    spreadProgress.querySelectorAll(".spread-dot")
+    spreadProgress
+      .querySelectorAll(".spread-dot")
       .forEach((d, i) => d.classList.toggle("active", i === idx));
   }
   let bookTapResolve = null;
   function waitForBookTap() {
     return new Promise((res) => {
-      if (!isPlaying) { res(); return; }
+      if (!isPlaying) {
+        res();
+        return;
+      }
       bookTapHint.style.opacity = "1";
       bookTapResolve = res;
       memoryBook.addEventListener("click", onBookTap, { once: true });
@@ -484,12 +562,18 @@
   }
   function onBookTap() {
     bookTapHint.style.opacity = "0";
-    if (bookTapResolve) { bookTapResolve(); bookTapResolve = null; }
+    if (bookTapResolve) {
+      bookTapResolve();
+      bookTapResolve = null;
+    }
   }
   function cancelBookTap() {
     memoryBook.removeEventListener("click", onBookTap);
     bookTapHint.style.opacity = "0";
-    if (bookTapResolve) { bookTapResolve(); bookTapResolve = null; }
+    if (bookTapResolve) {
+      bookTapResolve();
+      bookTapResolve = null;
+    }
   }
 
   async function showMemoryBook() {
@@ -521,15 +605,17 @@
       const tiltY = Math.sin(t * 0.8) * 3;
       const tiltX = Math.cos(t * 0.5) * 1.5;
       const scale = 1 + Math.sin(t * 1.1) * 0.008;
-      coverCard.style.transform =
-        `rotateY(${tiltY}deg) rotateX(${tiltX}deg) scale(${scale})`;
+      coverCard.style.transform = `rotateY(${tiltY}deg) rotateX(${tiltX}deg) scale(${scale})`;
       breatheId = requestAnimationFrame(animateBreathe);
     }
     breatheId = requestAnimationFrame(animateBreathe);
 
     /* Wait for tap */
     await new Promise((res) => {
-      if (!isPlaying) { res(); return; }
+      if (!isPlaying) {
+        res();
+        return;
+      }
       coverCard.addEventListener("click", res, { once: true });
     });
 
@@ -546,14 +632,14 @@
     if (!isPlaying) return;
 
     /* ── Phase 2: Wind-up tilt forward (feel of resistance) ── */
-    coverCard.style.transition = "transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94)";
+    coverCard.style.transition =
+      "transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94)";
     coverCard.style.transform = "rotateY(8deg) rotateX(-2deg) scale(1.01)";
     await sleep(210);
     if (!isPlaying) return;
 
     /* ── Phase 3: Main flip — spine pivot, dramatic easing ── */
-    coverCard.style.transition =
-      "transform 1.6s cubic-bezier(0.77,0,0.175,1)";
+    coverCard.style.transition = "transform 1.6s cubic-bezier(0.77,0,0.175,1)";
     coverCard.style.transform = "rotateY(-180deg)";
 
     /* Progressive shadow that blooms then fades */
@@ -580,7 +666,9 @@
     }, 650);
 
     /* Sparkles at midpoint */
-    setTimeout(() => { if (isPlaying) burstSparkles(14); }, 800);
+    setTimeout(() => {
+      if (isPlaying) burstSparkles(14);
+    }, 800);
 
     await sleep(1700);
     if (!isPlaying) return;
@@ -629,7 +717,8 @@
     pageTurnWrap.style.visibility = "visible";
     photoRight.src = spread.right;
     await sleep(30);
-    pageTurnWrap.style.transition = "transform 1.1s cubic-bezier(.645,.045,.355,1)";
+    pageTurnWrap.style.transition =
+      "transform 1.1s cubic-bezier(.645,.045,.355,1)";
     pageTurnWrap.style.transform = "rotateY(-180deg)";
     await sleep(1150);
     photoLeft.src = spread.left;
@@ -743,16 +832,22 @@
   }
 
   /* ── SETTINGS ── */
-  function openSettings() { settingsPanel.classList.remove("hidden"); }
-  function closeSettings() { settingsPanel.classList.add("hidden"); }
+  function openSettings() {
+    settingsPanel.classList.remove("hidden");
+  }
+  function closeSettings() {
+    settingsPanel.classList.add("hidden");
+  }
   function applySettings() {
     config.countdown = parseInt(
       document.querySelector('input[name="countdown"]:checked').value,
     );
-    config.rainChars = document.getElementById("rain-chars").value || "HAPPYBIRTHDAY";
+    config.rainChars =
+      document.getElementById("rain-chars").value || "HAPPYBIRTHDAY";
     config.rainColor1 = document.getElementById("rain-color1").value;
     config.rainColor2 = document.getElementById("rain-color2").value;
-    config.mainText = document.getElementById("main-text-input").value || "HAPPY|BIRTHDAY";
+    config.mainText =
+      document.getElementById("main-text-input").value || "HAPPY|BIRTHDAY";
     config.textColor = document.getElementById("text-color").value;
     config.showBook = document.getElementById("toggle-book").checked;
     config.showHearts = document.getElementById("toggle-hearts").checked;
@@ -779,7 +874,9 @@
       photoPreview.appendChild(img);
     });
     while (config.photos.length < 10)
-      config.photos.push(defaultPhotos[config.photos.length % defaultPhotos.length]);
+      config.photos.push(
+        defaultPhotos[config.photos.length % defaultPhotos.length],
+      );
   }
 
   document.addEventListener("DOMContentLoaded", init);
